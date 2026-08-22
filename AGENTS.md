@@ -75,6 +75,7 @@ Use structure-aware tools (`ast-grep`, LSPs, compilers) for code shape; `rg` for
 |------|----------|--------|
 | `rg` | grep | Content search |
 | `fd` | find | File names |
+| `rtk` | raw CLI dumps | Compact output: `rtk git`, `rtk read`, `rtk grep`, `rtk test` |
 | `ast-grep` | ad-hoc AST regex | Calls, imports, classes |
 | `prek` | pre-commit | `prek install` then `prek run`; `prek auto-update --cooldown-days 7` |
 | `gitleaks` | — | Secrets; fail closed |
