@@ -1,0 +1,52 @@
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editor
+*~
+*.swp
+*.swo
+.idea/
+
+# Cursor: commit rules only
+.cursor/*
+!.cursor/rules/
+!.cursor/rules/**
+
+# Antigravity: commit rules only (.agents and legacy .agent)
+.agents/*
+!.agents/rules/
+!.agents/rules/**
+.agent/*
+!.agent/rules/
+!.agent/rules/**
+
+# Claude Code local overrides
+.claude/settings.local.json
+.claude/*.local.*
+
+# Per-checkout agent overlays (must not ship)
+AGENTS.override.md
+AGENTS.local.md
+CLAUDE.local.md
+GEMINI.local.md
+
+# Secrets and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+credentials.json
+secrets.yaml
+secrets.yml
+
+# Scratch
+*.log
+tmp/
+.cache/
