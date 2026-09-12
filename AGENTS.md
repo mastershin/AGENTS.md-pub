@@ -97,3 +97,65 @@ Commits: imperative mood, ≤72-character subject, one logical change. Sign when
 Parallel agents MUST use separate worktrees (`wt switch <branch>` or `git worktree add`). Never share a dirty working tree.
 
 PRs describe **what the tree does after merge**. Plain factual language (avoid: critical, crucial, essential, significant, comprehensive, robust, elegant). Link the ticket when the org uses them. Security, auth, crypto, and data-store changes SHOULD request review from those path owners.
+
+# Production API & MCP Engineering Standards
+
+## 1. Scope & Enforcement
+Every AI-generated API endpoint (REST/FastAPI/NestJS) and MCP Tool must comply with these architectural guarantees. Do not generate endpoints with side effects that ignore retries or race conditions.
+
+---
+
+## 2. Mutating Endpoints (POST / PUT / PATCH / DELETE)
+
+### A. Idempotency (Mandatory on mutative actions & payments)
+- Any mutating operation must accept an `Idempotency-Key` string header.
+- Use a Redis/KV lease lock pattern before processing:
+  1. Key check: Return cached response if payload exists (`state=COMPLETED`).
+  2. In-flight check: Return `409 Conflict` if currently running (`state=PROCESSING`).
+  3. Acquire lock with a deterministic TTL (minimum 24h).
+  4. Write response status and body back to the store inside a `finally` block.
+
+### B. Optimistic Concurrency Control (OCC)
+- Record updates must not blindly overwrite database rows.
+- Use versioning (`version: int` or `updated_at: datetime`).
+- Read endpoints returning mutable resources must return an `ETag` header.
+- Mutative endpoints (`PATCH`, `PUT`) must validate the `If-Match` header.
+- Execute conditional writes:
+  `UPDATE table SET ... version = version + 1 WHERE id = :id AND version = :expected_version`
+- Raise HTTP `412 Precondition Failed` if zero rows are updated.
+
+---
+
+## 3. Machine-Readable Error Responses (RFC 9457)
+- Never return unstructured error strings (e.g., `{"error": "something failed"}`).
+- All error responses must adhere to `application/problem+json`:
+  ```json
+  {
+    "type": "[https://api.domain.com/errors/](https://api.domain.com/errors/)<kebab-case-error-code>",
+    "title": "<Human-readable title>",
+    "status": 400,
+    "detail": "<Specific context descriptive error>",
+    "instance": "<Request path>",
+    "code": "<UPPERCASE_STABLE_CODE>",
+    "invalid_params": []
+  }
+  ```
+- Fast-fail on schema validation, preserving field-level errors in `invalid_params`.
+
+---
+
+## 4. Lifecycle & Sunset Metadata
+- When refactoring, replacing, or obsoleting an endpoint, do NOT delete it immediately.
+- Annotate with RFC 8594 standard headers:
+  - `Deprecation: @<unix_timestamp>` or `true`
+  - `Sunset: <HTTP-date>`
+  - `Link: <https://docs.domain.com/migrations/...>; rel="sunset"`
+
+---
+
+## 5. Model Context Protocol (MCP) Tool Design Rules
+When authoring tools for MCP servers:
+1. **Side-Effect Idempotency:** Any tool performing state changes must accept an `idempotency_key: str` in its input schema.
+2. **Version Pinning:** Tools modifying resources must require an `expected_version` or `etag` parameter.
+3. **Structured Tool Errors:** Tool errors must return `isError: true` accompanied by a typed JSON payload with stable error codes (e.g., `RESOURCE_LOCKED`, `PRECONDITION_FAILED`), never raw traceback logs.
+4. **Tool Deprecation:** Mark obsolete tools in the MCP schema via `description: "[DEPRECATED - Sunset: 2027-01-01. Use tool_v2 instead] ..."`
