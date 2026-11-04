@@ -14,10 +14,12 @@ Desktop.ini
 !.cursor/rules/
 !.cursor/rules/**
 
-# Antigravity: commit rules only (.agents and legacy .agent)
+# Antigravity: commit rules and skills only (.agents and legacy .agent)
 .agents/*
 !.agents/rules/
 !.agents/rules/**
+!.agents/skills/
+!.agents/skills/**
 .agent/*
 !.agent/rules/
 !.agent/rules/**

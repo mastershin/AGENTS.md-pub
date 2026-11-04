@@ -1,0 +1,7 @@
+---
+description: Extracts hardcoded frontend design values into a centralized, zero-dependency two-tier CSS custom property token system.
+globs: ""
+alwaysApply: false
+---
+
+@../../skills/extract-design-tokens.md
