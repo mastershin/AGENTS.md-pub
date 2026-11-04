@@ -1,0 +1,62 @@
+.agents/skills/close-session/SKILL.md
+  h_ba3475ad4abcb3 1-6
+.agents/skills/extract-design-tokens/SKILL.md
+  h_ba3475ad4abcb3 1-6
+.agents/skills/learn/SKILL.md
+  h_ba3475ad4abcb3 1-6
+.agents/skills/map-features/SKILL.md
+  h_ba3475ad4abcb3 1-6
+.agents/skills/resume-session/SKILL.md
+  h_ba3475ad4abcb3 1-6
+.cursor/rules/close-session.mdc
+  h_ba3475ad4abcb3 1-7
+.cursor/rules/extract-design-tokens.mdc
+  h_ba3475ad4abcb3 1-7
+.cursor/rules/learn.mdc
+  h_ba3475ad4abcb3 1-7
+.cursor/rules/map-features.mdc
+  h_ba3475ad4abcb3 1-7
+.cursor/rules/resume-session.mdc
+  h_ba3475ad4abcb3 1-7
+.github/prompts/close-session.prompt.md
+  h_ba3475ad4abcb3 1-5
+.github/prompts/extract-design-tokens.prompt.md
+  h_ba3475ad4abcb3 1-5
+.github/prompts/learn.prompt.md
+  h_ba3475ad4abcb3 1-5
+.github/prompts/map-features.prompt.md
+  h_ba3475ad4abcb3 1-5
+.github/prompts/resume-session.prompt.md
+  h_ba3475ad4abcb3 1-5
+.gitignore
+  h_ba3475ad4abcb3 17,21-22
+README.md
+  h_ba3475ad4abcb3 11-12,14,20-27
+prompts/install-session-skills.md
+  h_ba3475ad4abcb3 1-126
+prompts/vue-design-tokens-isolation.md
+  h_ba3475ad4abcb3 1-37
+prompts/vue-design-tokens-refactor.md
+  h_ba3475ad4abcb3 1-28
+skills/close-session.md
+  h_ba3475ad4abcb3 1-37
+skills/extract-design-tokens.md
+  h_ba3475ad4abcb3 1-31
+skills/learn.md
+  h_ba3475ad4abcb3 1-22
+skills/map-features.md
+  h_ba3475ad4abcb3 1-20
+skills/resume-session.md
+  h_ba3475ad4abcb3 1-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "bf7cfce49b07bcd700f1a10eec661b87a8a9f5b9",
+  "prompts": {},
+  "humans": {
+    "h_ba3475ad4abcb3": {
+      "author": "jae <mastershin@gmail.com>"
+    }
+  }
+}
