@@ -4,4 +4,4 @@ globs: ""
 alwaysApply: false
 ---
 
-@../../skills/close-session.md
+@../../skills/close-session/SKILL.md

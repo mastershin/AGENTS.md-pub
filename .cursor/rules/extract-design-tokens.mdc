@@ -4,4 +4,4 @@ globs: ""
 alwaysApply: false
 ---
 
-@../../skills/extract-design-tokens.md
+@../../skills/extract-design-tokens/SKILL.md

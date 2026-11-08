@@ -1,3 +1,8 @@
+---
+name: close-session
+description: Summarizes session progress, updates documentation, refreshes feature maps, and builds a compact handoff file for future sessions.
+---
+
 # /close-session (/save-session) Protocol
 
 When triggered by the user via `/close-session`, `/save-session`, "close session", or "save session", execute the following phases deterministically without asking for flags or parameters:

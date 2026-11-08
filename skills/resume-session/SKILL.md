@@ -1,3 +1,8 @@
+---
+name: resume-session
+description: Seamlessly boots a fresh coding session using the project handoff, checks git state, and presents the next queued action.
+---
+
 # /resume-session Protocol
 
 When the user runs `/resume-session` or says "resume session":

@@ -1,3 +1,8 @@
+---
+name: map-features
+description: Generates and maintains docs/FEATURE_MAP.md grouping the codebase into vertical feature slices for 1-hop file navigation.
+---
+
 # /map-features Protocol: Vertical Feature Indexer
 
 When triggered via `/map-features` or "update feature map":

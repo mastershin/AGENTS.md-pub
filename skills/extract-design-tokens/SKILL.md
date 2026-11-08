@@ -1,3 +1,8 @@
+---
+name: extract-design-tokens
+description: Extracts hardcoded frontend design values into a centralized, zero-dependency two-tier CSS custom property token system.
+---
+
 # /extract-design-tokens Protocol
 
 When triggered via `/extract-design-tokens`, `/extract-tokens`, or "extract design tokens":

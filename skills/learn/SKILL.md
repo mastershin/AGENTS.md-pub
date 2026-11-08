@@ -1,3 +1,8 @@
+---
+name: learn
+description: Distills an edge case, user correction, or bug resolution into a concise, permanent rule in AGENTS.md or rules/.
+---
+
 # /learn Protocol: Session Distillation & Concurrent Rule Extraction
 
 When the user runs `/learn` or says "learn from this":
@@ -73,3 +78,4 @@ with lock_path.open("r+") as lock_file:
     finally:
         fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
 EOF
+```
