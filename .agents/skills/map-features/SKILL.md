@@ -33,3 +33,9 @@ Group the repository by **Business/Functional Feature** (not folder layer). Keep
   - **Adding a Feature:** Exact boilerplate files to create + Global Wiring Registries to update.
   - **Removing a Feature:** Slice paths to delete + Global Wiring Registries to clean up + safe migration/deprecation steps.
 - **Prune Stale Paths:** Verify listed paths exist; remove dead links so future sessions resolve targets in 1 hop without running broad `rg` or `fd` searches.
+
+## 4. Wire `AGENTS.md` Navigation Protocol
+Ensure the root `AGENTS.md` contains the `## Universal Feature Indexing & Low-Context Protocol` section (append if missing):
+1. **Map Before Search:** Read `docs/FEATURE_MAP.md` before running `rg`, `fd`, or broad glob searches.
+2. **Vertical Slice Isolation:** Keep feature logic colocated (`features/<name>/` or `domains/<name>/`), with framework-locked files kept as thin 1–5 line adapters.
+3. **Self-Maintaining Index:** Update `docs/FEATURE_MAP.md` in the same commit whenever files or features are added, moved, or deleted.
