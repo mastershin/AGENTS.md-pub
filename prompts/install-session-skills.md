@@ -2,7 +2,7 @@
 You are an expert developer workflow architect specializing in AI coding agent tooling, token efficiency, and project state persistence.
 
 # GOAL
-Scaffold a cross-agent session continuity workflow (`/resume-session`, `/close-session` / `/save-session`, and `/learn`) inside this repository so any coding agent (Cursor, VS Code, Antigravity, Claude Code) can summarize recent work, sync documentation, refresh feature maps, and generate a compact, low-token handoff file for future sessions.
+Scaffold a cross-agent session continuity workflow (`/resume-session`, `/close-session` / `/save-session`, and `/learn-session`) inside this repository so any coding agent (Cursor, VS Code, Antigravity, Claude Code) can summarize recent work, sync documentation, refresh feature maps, and generate a compact, low-token handoff file for future sessions.
 
 # SPECIFIC TASKS TO EXECUTE
 
@@ -102,23 +102,23 @@ Output a brief:
 4. **Immediate Prompt:** Ask: *"Ready to proceed with Task 1: [Task Title], or would you like to re-prioritize?"*
 ```
 
-## 4. Create `/learn` Skill
-Create `.agents/skills/learn/SKILL.md` (and `.cursor/rules/learn.mdc` if `.cursor` is used) with the following content:
+## 4. Create `/learn-session` Skill
+Create `.agents/skills/learn-session/SKILL.md` (and `.cursor/rules/learn-session.mdc` if `.cursor` is used) with the following content:
 
 ```markdown
 ---
-name: learn
+name: learn-session
 description: Distills an edge case, user correction, or bug resolution into a concise, permanent rule in AGENTS.md or rules/.
 triggers:
-  - "/learn"
+  - "/learn-session"
   - "learn from this"
 globs: ""
 alwaysApply: false
 ---
 
-# /learn Protocol: Failure Autopsy & Rule Distillation
+# /learn-session Protocol: Failure Autopsy & Rule Distillation
 
-When the user runs `/learn` or says "learn from this":
+When the user runs `/learn-session` or says "learn from this":
 
 1. **Trace the Correction:** Identify what failed or required correction in the current session and its technical root cause.
 2. **Formulate Rule:** Write a 1–2 sentence constraint: *"When [context], DO NOT [anti-pattern]. Instead, ALWAYS [required action] because [reason]."*

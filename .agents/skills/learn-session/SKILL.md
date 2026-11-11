@@ -1,11 +1,11 @@
 ---
-name: learn
+name: learn-session
 description: Distills an edge case, user correction, or bug resolution into a concise, permanent rule in AGENTS.md or rules/.
 ---
 
-# /learn Protocol: Session Distillation & Concurrent Rule Extraction
+# /learn-session Protocol: Session Distillation & Concurrent Rule Extraction
 
-When the user runs `/learn` or says "learn from this":
+When the user runs `/learn-session` or says "learn from this":
 
 ## 1. Synthesize Session Takeaways
 Briefly summarize (3–5 bullets max) what was accomplished, debugged, or decided in the session:
@@ -48,7 +48,7 @@ target_path = pathlib.Path(sys.argv[1])
 section_header = sys.argv[2].strip()
 new_rule = sys.argv[3].strip()
 
-lock_path = pathlib.Path("/tmp/repo_learn_skill.lock")
+lock_path = pathlib.Path("/tmp/repo_learn_session_skill.lock")
 lock_path.touch(exist_ok=True)
 
 with lock_path.open("r+") as lock_file:
