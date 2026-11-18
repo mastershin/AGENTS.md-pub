@@ -1,0 +1,91 @@
+# Universal OpenTelemetry Collector Config (OTLP/HTTP :4318 Primary + Multi-Backend Fan-Out)
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 0.0.0.0:4318
+      grpc:
+        endpoint: 0.0.0.0:4317
+  hostmetrics:
+    collection_interval: 30s
+    scrapers:
+      cpu: {}
+      memory: {}
+      disk: {}
+      filesystem: {}
+      load: {}
+      network: {}
+
+processors:
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 1024
+    spike_limit_mib: 256
+
+  filter/drop_noise:
+    error_mode: ignore
+    traces:
+      span:
+        - 'attributes["http.route"] == "/health" or attributes["http.route"] == "/healthz"'
+        - 'attributes["http.route"] == "/ready" or attributes["http.route"] == "/metrics"'
+
+  attributes/redact:
+    actions:
+      - key: http.request.header.authorization
+        action: delete
+      - key: http.request.header.cookie
+        action: delete
+      - key: db.query.parameter
+        action: delete
+
+  tail_sampling:
+    decision_wait: 10s
+    num_traces: 50000
+    policies:
+      - name: errors-policy
+        type: status_code
+        status_code: { status_codes: [ERROR] }
+      - name: http-4xx-5xx-policy
+        type: numeric_attribute
+        numeric_attribute: { key: http.response.status_code, min_value: 400, max_value: 599 }
+      - name: slow-traces-policy
+        type: latency
+        latency: { threshold_ms: 1000 }
+      - name: baseline-sample
+        type: probabilistic
+        probabilistic: { sampling_percentage: 10 }
+
+  batch:
+    send_batch_size: 1024
+    timeout: 2s
+
+exporters:
+  # 1. SigNoz OTLP HTTP
+  otlphttp/signoz:
+    endpoint: "http://signoz-otel-collector:4318"
+
+  # 2. OpenObserve OTLP HTTP
+  otlphttp/openobserve:
+    endpoint: "http://openobserve:5080/api/default"
+    headers:
+      Authorization: "Basic ${env:OPENOBSERVE_BASIC_AUTH}"
+      stream-name: "default"
+
+  # 3. Grafana LGTM / Alloy OTLP HTTP
+  otlphttp/grafana:
+    endpoint: "http://grafana-lgtm:4318"
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, filter/drop_noise, attributes/redact, tail_sampling, batch]
+      exporters: [otlphttp/signoz, otlphttp/openobserve, otlphttp/grafana]
+    metrics:
+      receivers: [otlp, hostmetrics]
+      processors: [memory_limiter, attributes/redact, batch]
+      exporters: [otlphttp/signoz, otlphttp/openobserve, otlphttp/grafana]
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter, attributes/redact, batch]
+      exporters: [otlphttp/signoz, otlphttp/openobserve, otlphttp/grafana]

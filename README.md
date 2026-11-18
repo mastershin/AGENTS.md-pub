@@ -8,7 +8,7 @@ Edit policy in **one place**. Adapters only attach it.
 |------|------|
 | Always-on (AAIF) | [`AGENTS.md`](./AGENTS.md) |
 | Stack bodies | [`rules/`](./rules/) — `python`, `typescript`, `rust`, `shell`, `ci` |
-| On-demand skills | [`skills/`](./skills/) — `resume-session`, `close-session`, `learn-session`, `extract-design-tokens`, `map-features`, `modularize-features` |
+| On-demand skills | [`skills/`](./skills/) — `jae-resume-session`, `jae-close-session`, `jae-learn-session`, `jae-extract-design-tokens`, `jae-implement-otel-observability`, `jae-map-features`, `jae-modularize-features` |
 | Bootstrap & refactor meta-prompts | [`prompts/`](./prompts/) |
 
 Do not edit stack policy or skills in tool folders. Change `AGENTS.md`, `rules/<stack>.md`, or `skills/<skill>/SKILL.md` only.

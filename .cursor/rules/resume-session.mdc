@@ -1,7 +1,0 @@
----
-description: Seamlessly boots a fresh coding session using the project handoff, checks git state, and presents the next queued action.
-globs: ""
-alwaysApply: false
----
-
-@../../skills/resume-session/SKILL.md
