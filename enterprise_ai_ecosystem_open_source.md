@@ -3,7 +3,7 @@
 
 This reference architecture includes **exclusively 100% free, permissive open-source software (Apache 2.0, MIT, BSD, PostgreSQL)**.
 * **Zero Licensing Lock-in:** Safe for proprietary enterprise modification, internal SaaS deployment, and air-gapped VPCs without copyleft (AGPL/GPL) or Fair-Code/SSPL commercial restrictions.
-* **Excluded by Design:** Proprietary SaaS APIs, SSPL/RSAL databases (e.g., Redis, MongoDB), AGPL/ELv2 tools (e.g., Arize Phoenix), Fair-Code tools (e.g., n8n), and non-commercial/restricted weights.
+* **Excluded by Design:** Proprietary SaaS APIs (e.g., Notion, Zep Cloud), SSPL/RSAL databases (e.g., Redis, MongoDB), copyleft/ELv2 tools (e.g., Arize Phoenix, AppFlowy, Docmost, Neo4j GPLv3, XTDB MPL-2.0), Fair-Code/BSL tools (e.g., n8n, Outline), and non-commercial/restricted weights.
 
 > **Scale Tier Legend:**
 > * **Tier 1 (Prototyping / Departmental):** $< 100\text{K}$ documents / $< 1\text{M}$ vectors / $< 10\text{ GB}$
@@ -189,3 +189,87 @@ This reference architecture includes **exclusively 100% free, permissive open-so
 | **Doc Parsing** | ![Docling](https://img.shields.io/badge/IBM-Docling-054ADA?style=flat-square&logo=ibm&logoColor=white) **IBM Docling** | **MIT** | [docling-project/docling](https://github.com/docling-project/docling) | Local GPU/CPU PDF layout, table, and OCR parser converting complex enterprise docs to Markdown/JSON (**Tier 1 – Tier 3**). |
 | **Sandboxing** | ![E2B](https://img.shields.io/badge/E2B-Open%20Infra-F97316?style=flat-square) **E2B Infrastructure & SDK** | **Apache 2.0** | [e2b-dev/E2B](https://github.com/e2b-dev/E2B) | Firecracker microVM orchestration for isolated AI code execution (**Tier 1 – Tier 3**). |
 | **Reranking** | ![FlashRank](https://img.shields.io/badge/Prithiviraj-FlashRank-10B981?style=flat-square) **FlashRank / BGE-Reranker** | **Apache 2.0 / MIT** | [PrithivirajDamodaran/FlashRank](https://github.com/PrithivirajDamodaran/FlashRank) | Ultra-fast CPU/ONNX cross-encoder reranking improving RAG precision by $15-25\%$ (**Tier 1 – Tier 3**). |
+
+---
+
+## 13. Collaborative Knowledge Workspaces & Human-in-the-Loop Action Targets (MIT / BSD)
+
+*(Note: **Notion** [Commercial SaaS], **AppFlowy** [AGPL-3.0 + separate self-hosted commercial server terms], **Outline** [BSL 1.1], and **Docmost** [AGPL-3.0 core + Enterprise] are excluded from the strictly permissive Apache 2.0 / MIT / BSD stack below, but are analyzed in the ecosystem overview and comparison table for architectural reference).*
+
+### Where AppFlowy & Notion Fit in the Ecosystem
+
+Rather than replacing your vector database, LLM gateway, or agent orchestrator, tools like Notion and AppFlowy act as structured human knowledge stores and action targets:
+
+* **Knowledge Source for RAG & Memory:** Docs, wikis, SOPs, runbooks, meeting notes, and relational tables are exported or synced into your ingestion/chunking pipeline and vector database for grounded Q&A.
+* **Tool & Action Layer via MCP:** Through MCP servers, AI agents (e.g., LangGraph, PydanticAI, Claude/IDE agents) can read workspace trees, search pages, summarize threads, create specs/runbooks, and update databases. Notion provides an official hosted MCP endpoint ([https://mcp.notion.com/mcp](https://mcp.notion.com/mcp)), while AppFlowy integrates with agents via community/self-hosted MCP servers that interact with AppFlowy Cloud APIs or decode Yjs CRDT pages. In a 100% permissive stack, self-hosted wikis and Git-backed Markdown portals fulfill the same role via `FastMCP` API wrappers or `Filesystem` / `GitHub` MCP servers.
+* **Human-in-the-Loop & Artifact Destination:** Agents draft PRDs, release trackers, incident summaries, or structured tables directly into the workspace where humans review, edit, and approve them.
+
+### Strictly Permissive Self-Hosted Knowledge & Wiki Platforms (MIT / BSD)
+
+| Logo & Product | License | GitHub Repository | Enterprise Use Cases | Recommended Scale |
+| :--- | :--- | :--- | :--- | :--- |
+| ![BookStack](https://img.shields.io/badge/BookStack-MIT%20Wiki-0288D1?style=flat-square) **BookStack** | **MIT** | [BookStackApp/BookStack](https://github.com/BookStackApp/BookStack) | Self-hosted team wiki (`Shelves → Books → Chapters → Pages`) with WYSIWYG/Markdown editing, RBAC, LDAP/OIDC/SAML SSO, and REST API for RAG ingestion and custom `FastMCP` servers. | **Tier 1 – Tier 2** (Self-hosted enterprise knowledge bases with zero AGPL/BSL restrictions). |
+| ![Docusaurus](https://img.shields.io/badge/Meta-Docusaurus-2E8555?style=flat-square&logo=docusaurus&logoColor=white) **Docusaurus** | **MIT** | [facebook/docusaurus](https://github.com/facebook/docusaurus) | Git-backed Markdown/MDX documentation portal with versioning and search; ideal for docs-as-code RAG pipelines and PR-reviewed human-in-the-loop agent drafts. | **Tier 1 – Tier 3** (Versioned engineering docs, SOPs, and internal developer portals). |
+| ![MkDocs](https://img.shields.io/badge/MkDocs-Docs--as--Code-526CFE?style=flat-square) **MkDocs** | **BSD-2-Clause** | [mkdocs/mkdocs](https://github.com/mkdocs/mkdocs) | Lightweight Python static documentation generator over plain Git Markdown; effortlessly synced into vector stores or exposed to agents via `Filesystem` / `GitHub` MCP servers. | **Tier 1 – Tier 3** (Air-gapped technical documentation and runbook repositories). |
+
+### Comparison: AppFlowy vs. Notion & Permissive Alternatives
+
+| Tool / Platform | Ecosystem Role | License / Model | Best Enterprise Fit & Scale |
+| :--- | :--- | :--- | :--- |
+| ![Notion](https://img.shields.io/badge/Notion-Workspace%20%26%20MCP-000000?style=flat-square&logo=notion&logoColor=white) **Notion** ([notion.so](https://www.notion.so)) *(Excluded from strict OSS)* | Cloud collaborative docs, wikis, project databases & official MCP ([mcp.notion.com/mcp](https://mcp.notion.com/mcp)) | Commercial SaaS (Enterprise plans; official remote MCP) | **Full / Commercial stack (Tier 1 – Tier 3).** Great for fast cross-team adoption, structured project/wiki workflows, and OAuth-managed MCP agent access; less suited when air-gapped on-prem or strict open-source licensing is required. |
+| ![AppFlowy](https://img.shields.io/badge/AppFlowy-Self--Hosted%20Workspace-8427E0?style=flat-square) **AppFlowy** ([AppFlowy-IO/AppFlowy](https://github.com/AppFlowy-IO/AppFlowy)) *(Excluded from strict OSS)* | Self-hostable Notion-style workspace, docs & relational databases with local/on-prem AI support | AGPL-3.0 (open-source client/core; separate self-hosted commercial license terms) | **Full / OSS + Commercial stack (Tier 1 – Tier 2).** Good fit when you want a self-hosted Notion-like workspace with local/BYO LLMs, provided your legal team accepts AGPL-3.0 / commercial server licensing. |
+| ![Wikis](https://img.shields.io/badge/Outline%20%2F%20Docmost-Team%20Wikis-0EA5E9?style=flat-square) **Outline / Docmost** ([outline/outline](https://github.com/outline/outline) / [docmost/docmost](https://github.com/docmost/docmost)) *(Excluded from strict OSS)* | Self-hosted team wikis & documentation (lighter on heavy databases than Notion/AppFlowy) | Varies by repo/edition (e.g., Outline BSL 1.1; Docmost AGPL-3.0 core + Enterprise — verify exact license per release) | **Knowledge / Wiki tier (Tier 1 – Tier 2).** Better if your primary need is clean engineering/company documentation and RAG ingestion rather than full relational database apps. |
+| ![Permissive Wikis](https://img.shields.io/badge/BookStack%20%2F%20Docusaurus%20%2F%20MkDocs-Permissive%20OSS-10B981?style=flat-square) **BookStack / Docusaurus / MkDocs** ([BookStackApp/BookStack](https://github.com/BookStackApp/BookStack) / [facebook/docusaurus](https://github.com/facebook/docusaurus) / [mkdocs/mkdocs](https://github.com/mkdocs/mkdocs)) | Strictly permissive self-hosted team wiki (BookStack) and Git-backed docs-as-code portals (Docusaurus, MkDocs) for frictionless RAG & MCP syncing | **MIT** (BookStack, Docusaurus) / **BSD-2-Clause** (MkDocs) — 100% permissive open source | **Strict Permissive OSS / Air-Gapped stack (Tier 1 – Tier 3).** Best fit for this guide's strict permissive policy when SaaS, AGPL-3.0, and BSL 1.1 are disallowed. |
+
+---
+
+## 14. Document Ingestion, Deduplication & Evolving / Temporal Knowledge Graphs (Apache 2.0 / MIT / PostgreSQL)
+
+*(Note: **Zep Cloud** [Commercial SaaS], **Neo4j** [GPLv3 Community / Commercial Enterprise], and **XTDB** [MPL-2.0 weak file-level copyleft] are excluded from the strictly permissive Apache 2.0 / MIT / BSD / PostgreSQL stack below, but are summarized in the reference note for architectural comparison. Pair permissive frameworks with **PostgreSQL + Apache AGE** or **LadybugDB** to keep the full stack 100% permissive).*
+
+To handle scattered, duplicated, and occasionally inaccurate documents while building knowledge incrementally, keeping current truth, and querying/explaining how facts or policies changed over time, standard vector-only RAG usually falls short. Flat vector chunks retrieve semantically similar passages without reliably merging duplicate entities, invalidating outdated rules, or preserving exact historical timelines.
+
+The strongest approach combines **incremental entity/fact extraction + deduplication** with a **temporal or bi-temporal knowledge graph** (tracking both when a policy/fact was true in the real world and when the system ingested or superseded it, while keeping provenance links back to source documents).
+
+### 1. Strictly Permissive Platforms, Frameworks & SDKs (Apache 2.0 / MIT / PostgreSQL)
+
+| Platform / SDK | License | Role & Strengths for This Problem | Temporal & Evolution Model | Best Fit |
+| :--- | :--- | :--- | :--- | :--- |
+| ![Graphiti](https://img.shields.io/badge/Zep-Graphiti-6366F1?style=flat-square) **Graphiti** ([getzep/graphiti](https://github.com/getzep/graphiti)) | **Apache 2.0** *(verify graph backend license)* | Open-source SDK/framework for real-time, incremental temporal knowledge graphs for AI agents. Updates incrementally as new "episodes" arrive without full batch rebuilds, and traces derived facts back to source episodes. | Bi-temporal edge model: tracks valid intervals and ingestion/expiration timestamps, invalidating superseded edges rather than erasing history. | **Tier 1 – Tier 3.** Custom agent/knowledge stacks needing point-in-time queries ("what was the policy in Q1?") and full source provenance. |
+| ![Cognee](https://img.shields.io/badge/Cognee-Graph%20Memory-7C3AED?style=flat-square) **Cognee (OSS)** ([topoteretes/cognee](https://github.com/topoteretes/cognee)) | **Apache 2.0** | Graph-native memory and knowledge platform combining knowledge graphs + vector search in a unified ingestion (`cognify`) pipeline with entity extraction, graph traversal, and time-aware memory. | Supports graph-backed memory, entity/relationship tracking, and temporal/history workflows alongside semantic retrieval. | **Tier 1 – Tier 2.** Hybrid semantic + multi-hop graph retrieval where facts evolve and require structured relationships plus vector recall. |
+| ![LightRAG](https://img.shields.io/badge/HKUDS-LightRAG-10B981?style=flat-square) **LightRAG** ([HKUDS/LightRAG](https://github.com/HKUDS/LightRAG)) | **MIT** | Graph-based indexing and retrieval framework that extracts entities/relationships from chunks, performs entity/relation deduplication, and pairs graph structures with key-value/embedding retrieval (supports PostgreSQL + Apache AGE and NetworkX). | Focuses on incremental graph construction and entity/relation deduplication across segmented text. | **Tier 1 – Tier 2.** Teams building custom graph-enhanced RAG pipelines needing entity/edge deduplication and multi-hop context. |
+| ![Mem0 & Letta](https://img.shields.io/badge/Mem0%20%26%20Letta-Agent%20Memory-8B5CF6?style=flat-square) **Mem0 (OSS) & Letta (OSS)** ([mem0ai/mem0](https://github.com/mem0ai/mem0) / [letta-ai/letta](https://github.com/letta-ai/letta)) | **Apache 2.0** | Self-hosted agent memory layers/frameworks for persistent and evolving agent state (including graph-enhanced memory variants such as `Mem0g` and stateful agent memory management). | Primarily focused on evolving agent/user memory and retrieval; pair with a temporal graph/store when strict historical policy traversal is required. | **Tier 1 – Tier 3.** Conversational/operational agents accumulating preferences, facts, and state across sessions. |
+| ![Apache AGE](https://img.shields.io/badge/PostgreSQL-Apache%20AGE-4169E1?style=flat-square&logo=postgresql&logoColor=white) **PostgreSQL + Apache AGE** ([postgres/postgres](https://github.com/postgres/postgres) / [apache/age](https://github.com/apache/age)) | **PostgreSQL License / Apache 2.0** | Unified permissive relational + Cypher property-graph + `pgvector` database replacing Neo4j/XTDB in strict permissive environments. | Models explicit temporal validity on graph edges and append-only bitemporal audit tables via `tstzrange` valid/system-time columns and `btree_gist` exclusion constraints. | **Tier 1 – Tier 3.** Strict Apache/MIT/BSD/PostgreSQL stacks needing governed entity graphs, ACID provenance, and bitemporal audit reconstruction without copyleft licenses. |
+| ![LadybugDB](https://img.shields.io/badge/LadybugDB-Embedded%20Graph-E11D48?style=flat-square) **LadybugDB** *(Kùzu successor)* ([LadybugDB/ladybug](https://github.com/LadybugDB/ladybug)) | **MIT** | Embedded columnar property graph database supporting Cypher, vector/full-text search, and Arrow/Parquet integration (active community fork of archived `kuzudb/kuzu`, used with local Cognee/GraphRAG setups). | Supports explicit temporal edge attributes (`valid_from`, `valid_until`, `ingested_at`) in local-first embedded graphs. | **Tier 1 – Tier 2.** Local-first, air-gapped, or serverless embedded knowledge graphs without operating a separate graph cluster. |
+
+#### Non-Permissive / Copyleft Temporal & Graph Engines (Reference Only — Excluded from Strict Stack)
+
+| Platform / Engine | License (Exclusion Reason) | Ecosystem Role & Temporal Model | Permissive Replacement in This Guide |
+| :--- | :--- | :--- | :--- |
+| ![Zep](https://img.shields.io/badge/Zep-Context%20Engine-3B82F6?style=flat-square) **Zep** ([getzep/zep](https://github.com/getzep/zep)) | Commercial Cloud (+ Apache 2.0 SDKs & archived CE) | Managed temporal knowledge-graph memory platform tracking validity and provenance across episodes. | **Graphiti** (`Apache 2.0`) self-hosted |
+| ![Neo4j](https://img.shields.io/badge/Neo4j-Graph%20DB-008CC1?style=flat-square&logo=neo4j&logoColor=white) **Neo4j** ([neo4j/neo4j](https://github.com/neo4j/neo4j)) | GPLv3 (Community) + Commercial Enterprise | Enterprise graph DB widely used as a GraphRAG/Graphiti backing store with schema-level temporal validity windows. | **PostgreSQL + Apache AGE** (`Apache 2.0`) or **LadybugDB** (`MIT`) |
+| ![XTDB](https://img.shields.io/badge/XTDB-Bitemporal%20DB-0F766E?style=flat-square) **XTDB** ([xtdb/xtdb](https://github.com/xtdb/xtdb)) | MPL-2.0 (weak file-level copyleft) | Immutable bitemporal database engine natively tracking valid time and system/transaction time for exact point-in-time audit reconstruction. | **PostgreSQL** (`PostgreSQL License`) append-only `tstzrange` bitemporal ledger *(or evaluate MPL-2.0 if legal allows file-level copyleft)* |
+
+### 2. How to Handle Scattered Duplicates, Bad Info & "Explain What Changed"
+
+No single library automatically knows which of two conflicting memos is "true" without rules and provenance. In practice, wire together four capabilities:
+
+* **Pre-Ingestion Deduplication & Delta Detection:**
+  * Hash normalized documents/chunks and track source version IDs/timestamps so identical duplicates are skipped and only added, modified, or deleted items trigger re-processing.
+  * Run entity and relation resolution (merging variants like `"US Remote Work Policy"`, `"Remote Work Policy v2"`, or aliases) so duplicate mentions map to the same canonical node.
+* **Superseding Instead of Destructive Overwrites:**
+  * When a newer or authoritative document contradicts an older policy edge/fact, close the old fact's validity window (`valid_until` / `superseded`) and open a new edge rather than deleting the old one.
+  * Keep source provenance (document ID, section, effective date, ingestion date) on every extracted claim so you can trace where a fact came from.
+* **Handling "Slightly Wrong" or Noisy Documents:**
+  * Assign source trust / authority tiers (e.g., `Approved Policy / Signed SOP > Draft / Meeting Notes / Chat`) and require human review or quarantine flags when a low-trust source contradicts a high-trust source.
+  * Allow retroactive valid-time corrections when a late document clarifies that a rule actually changed on an earlier date, while keeping the ingestion log intact for auditability.
+* **Explaining Changes Over Time to the User:**
+  * Query the graph/store for all versions of a topic or edge ordered by effective/valid date (e.g., `version 1 -> version 2 -> current`), pulling the diff between states plus the citing source documents.
+  * Have the LLM synthesize a structured timeline: what the rule was, when and how it changed, which source introduced the change, and what applies today.
+
+### 3. Practical Starting Stack (100% Permissive OSS)
+
+* **Temporal entity/fact graphs + provenance:** **Graphiti** (`Apache 2.0`) or **LightRAG** (`MIT`) paired with **PostgreSQL + Apache AGE** (`PostgreSQL License / Apache 2.0`) to avoid Neo4j's `GPLv3` / Commercial terms and Zep's Commercial Cloud. *(Note: verify native Graphiti graph driver support when selecting a backend, as Graphiti officially targets Neo4j/FalkorDB/Neptune).*
+* **Hybrid semantic + graph knowledge base:** **Cognee (OSS)** (`Apache 2.0`, backed by **LadybugDB** [`MIT`] or **NetworkX** [`BSD-3-Clause`]) or **LightRAG** (`MIT`), paired with an incremental ingestion/change-detection pipeline and source metadata/trust tags.
+* **Strict bitemporal compliance/audit ledger:** **PostgreSQL** (`PostgreSQL License`) append-only `tstzrange` valid-time/system-time tables alongside your document/graph store when policy forbids **XTDB** (`MPL-2.0`).
+
