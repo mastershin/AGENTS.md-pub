@@ -3,7 +3,7 @@
 
 This reference architecture includes **exclusively 100% free, permissive open-source software (Apache 2.0, MIT, BSD, PostgreSQL)**.
 * **Zero Licensing Lock-in:** Safe for proprietary enterprise modification, internal SaaS deployment, and air-gapped VPCs without copyleft (AGPL/GPL) or Fair-Code/SSPL commercial restrictions.
-* **Excluded by Design:** Proprietary SaaS APIs (e.g., Notion, Zep Cloud), managed cloud graph & context platforms (e.g., Amazon Neptune, Azure Cosmos DB, Google Cloud Spanner Graph, Databricks Genie Ontology, AWS Context, Palantir Foundry, Microsoft Fabric IQ), proprietary free-tier binaries (e.g., Ontotext GraphDB Free), SSPL/RSAL databases (e.g., Redis, MongoDB), copyleft/ELv2 tools (e.g., Arize Phoenix, AppFlowy, Docmost, Neo4j GPLv3, ComfyUI GPLv3, XTDB MPL-2.0, Owlready2 LGPL-3.0), Fair-Code/BSL tools (e.g., n8n, Outline), and non-commercial/restricted weights.
+* **Excluded by Design:** Proprietary SaaS APIs (e.g., Notion, Zep Cloud), managed cloud graph & context platforms (e.g., Amazon Neptune, Azure Cosmos DB, Google Cloud Spanner Graph, Databricks Genie Ontology, AWS Context, Palantir Foundry, Microsoft Fabric IQ), proprietary free-tier binaries (e.g., Ontotext GraphDB Free), SSPL/RSAL databases (e.g., Redis, MongoDB), copyleft/ELv2 tools (e.g., Arize Phoenix, AppFlowy, Docmost, Neo4j GPLv3, ComfyUI GPLv3, XTDB MPL-2.0, Owlready2 LGPL-3.0), Fair-Code/BSL/restricted-commercial tools (e.g., n8n, Dify Modified Apache 2.0, Open WebUI BSD+branding >50 users, Outline), and non-commercial/restricted weights.
 
 > **Scale Tier Legend:**
 > * **Tier 1 (Prototyping / Departmental):** $< 100\text{K}$ documents / $< 1\text{M}$ vectors / $< 10\text{ GB}$
@@ -168,7 +168,7 @@ This reference architecture includes **exclusively 100% free, permissive open-so
 
 ## 11. Open-Source Workflow Automation & Durable Orchestration (Apache 2.0 / MIT)
 
-*(Note: n8n is excluded here due to its Fair-Code Sustainable Use License; the tools below are 100% Apache 2.0 / MIT).*
+*(Note: **n8n** [Fair-Code Sustainable Use License] and **Dify** [Modified Apache 2.0 restricting multi-tenant SaaS & frontend branding removal] are excluded from the strictly permissive table below and summarized in the reference comparison table; the tools below are 100% Apache 2.0 / MIT).*
 
 | Logo & Product | License | GitHub Repository | Enterprise Use Cases | Recommended Scale |
 | :--- | :--- | :--- | :--- | :--- |
@@ -176,7 +176,15 @@ This reference architecture includes **exclusively 100% free, permissive open-so
 | ![Apache Airflow](https://img.shields.io/badge/Apache-Airflow-017CEE?style=flat-square&logo=apacheairflow&logoColor=white) **Apache Airflow** | **Apache 2.0** | [apache/airflow](https://github.com/apache/airflow) | Enterprise batch DAG scheduler for automated document crawling, chunking, embedding, and vector index updates. | **Tier 2 – Tier 3** ($1\text{ TB} - 1\text{ PB}$ scheduled RAG ingestion & ML pipelines). |
 | ![Prefect](https://img.shields.io/badge/Prefect-OSS%20Orchestrator-024DFD?style=flat-square) **Prefect (OSS Server)** | **Apache 2.0** | [PrefectHQ/prefect](https://github.com/PrefectHQ/prefect) | Self-hosted Python workflow orchestration with dynamic task mapping, retries, and real-time UI. | **Tier 1 – Tier 3** (Python AI data ingestion and batch evaluation pipelines). |
 | ![Kestra](https://img.shields.io/badge/Kestra-OSS%20Orchestrator-8405FF?style=flat-square) **Kestra (OSS Edition)** | **Apache 2.0** | [kestra-io/kestra](https://github.com/kestra-io/kestra) | Event-driven & scheduled declarative YAML orchestrator with hundreds of open-source plugins and built-in UI. | **Tier 2 – Tier 3** (Enterprise polyglot automation replacing proprietary low-code runners). |
+| ![Langflow](https://img.shields.io/badge/Langflow-Visual%20Agent%20Builder-6366F1?style=flat-square) **Langflow** | **MIT** | [langflow-ai/langflow](https://github.com/langflow-ai/langflow) | Visual drag-and-drop Python AI agent & RAG flow builder with custom Python components, REST API export, and MCP support. | **Tier 1 – Tier 2** (Self-hosted visual LLM workflow builder with zero commercial/SaaS restrictions). |
 | ![Activepieces](https://img.shields.io/badge/Activepieces-MIT%20Automation-6366F1?style=flat-square) **Activepieces (MIT Core)** | **MIT** | [activepieces/activepieces](https://github.com/activepieces/activepieces) | Permissively licensed (MIT) open-source visual no-code workflow & AI automation alternative to Zapier/n8n. | **Tier 1 – Tier 2** (Self-hosted visual SaaS/AI workflow builder with zero Fair-Code restrictions). |
+
+#### Non-Permissive Visual AI Workflow Builders (Reference Only — Excluded from Strict Stack)
+
+| Platform | License (Exclusion Reason) | Ecosystem Role | Permissive Replacement in This Guide |
+| :--- | :--- | :--- | :--- |
+| ![Dify](https://img.shields.io/badge/Dify-LLMOps%20Platform-0033FF?style=flat-square) **Dify** ([langgenius/dify](https://github.com/langgenius/dify)) | Dify Open Source License (Modified Apache 2.0 — restricts multi-tenant SaaS & frontend logo removal) | Visual LLMOps platform combining agent workflows, RAG pipeline, prompt IDE, and APIs. | **Langflow** (`MIT`) for visual LLM/RAG flows + **Langfuse OSS** (`MIT`) for observability |
+| ![n8n](https://img.shields.io/badge/n8n-AI%20Workflow%20Automation-EA4B71?style=flat-square&logo=n8n&logoColor=white) **n8n** ([n8n-io/n8n](https://github.com/n8n-io/n8n)) | Sustainable Use License (Fair-Code) | Visual node-based workflow automation with $400+$ SaaS integrations and AI nodes. | **Activepieces (MIT Core)** (`MIT`) or **Kestra (OSS)** (`Apache 2.0`) |
 
 ---
 
@@ -190,12 +198,15 @@ This reference architecture includes **exclusively 100% free, permissive open-so
 | **Sandboxing** | ![E2B](https://img.shields.io/badge/E2B-Open%20Infra-F97316?style=flat-square) **E2B Infrastructure & SDK** | **Apache 2.0** | [e2b-dev/E2B](https://github.com/e2b-dev/E2B) | Firecracker microVM orchestration for isolated AI code execution (**Tier 1 – Tier 3**). |
 | **Reranking** | ![FlashRank](https://img.shields.io/badge/Prithiviraj-FlashRank-10B981?style=flat-square) **FlashRank / BGE-Reranker** | **Apache 2.0 / MIT** | [PrithivirajDamodaran/FlashRank](https://github.com/PrithivirajDamodaran/FlashRank) | Ultra-fast CPU/ONNX cross-encoder reranking improving RAG precision by $15-25\%$ (**Tier 1 – Tier 3**). |
 | **Media / Diffusion** | ![Diffusers](https://img.shields.io/badge/Hugging%20Face-Diffusers-FFD21E?style=flat-square&logo=huggingface&logoColor=black) **Hugging Face Diffusers** | **Apache 2.0** *(weights carry separate licenses)* | [huggingface/diffusers](https://github.com/huggingface/diffusers) | Programmatic Python pipelines for image, video, and audio diffusion generation inside permissive enterprise services (**Tier 1 – Tier 3**). |
+| **Chat Portal** | ![LibreChat](https://img.shields.io/badge/LibreChat-Enterprise%20Chat%20UI-10B981?style=flat-square) **LibreChat** | **MIT** *(verify backing DB/search deps)* | [danny-avila/LibreChat](https://github.com/danny-avila/LibreChat) | Self-hosted white-label enterprise AI chat workspace with OAuth2/LDAP SSO, Agent Builder, MCP tools, and RAG (**Tier 1 – Tier 3**). |
+| **Browser Agent** | ![Browser Use](https://img.shields.io/badge/Browser%20Use-Web%20Agent-F97316?style=flat-square) **Browser Use** | **MIT** | [browser-use/browser-use](https://github.com/browser-use/browser-use) | Python/TS AI browser-automation agent controlling real browsers over CDP with persistent REPL, custom actions, CLI, and MCP support (**Tier 1 – Tier 2**). |
 
-#### Copyleft Multimodal Workflow Engine (Reference Only — Excluded from Strict Stack)
+#### Copyleft & Restricted-License Infrastructure Tools (Reference Only — Excluded from Strict Stack)
 
 | Engine | License (Exclusion Reason) | Ecosystem Role | Permissive Replacement in This Guide |
 | :--- | :--- | :--- | :--- |
 | ![ComfyUI](https://img.shields.io/badge/ComfyUI-Workflow%20Engine-0F172A?style=flat-square) **ComfyUI** ([Comfy-Org/ComfyUI](https://github.com/Comfy-Org/ComfyUI)) | GPLv3 (copyleft) | Visual node-graph workflow engine and headless API server for open-weight diffusion, video, audio, and 3D generation. | **Hugging Face Diffusers** (`Apache 2.0`) for programmatic pipelines *(or run ComfyUI only if legal approves GPLv3 / isolated service boundaries)* |
+| ![Open WebUI](https://img.shields.io/badge/Open%20WebUI-Self--Hosted%20Chat-0F172A?style=flat-square) **Open WebUI** ([open-webui/open-webui](https://github.com/open-webui/open-webui)) | Open WebUI License *(BSD-3-Clause + branding restriction $>50$ users)* | Self-hosted enterprise chat portal for Ollama/vLLM/OpenAI with built-in RAG, RBAC, and MCP/tool pipelines. | **LibreChat** (`MIT`) for unrestricted white-labeling *(or keep Open WebUI if branding remains intact)* |
 
 ---
 
