@@ -21,7 +21,7 @@ Enterprise AI stack and domain architecture blueprints, each maintained in a **C
 
 | Topic | Commercial & Open Source | 100% Permissive Open Source |
 |-------|--------------------------|-----------------------------|
-| **Enterprise AI Ecosystem (2026)** — LLMs, inference, RAG, agents, observability, graph DBs, ontologies, and enterprise context layers | [`enterprise_ai_ecosystem_commercial_and_open_source.md`](./enterprise_ai_ecosystem_commercial_and_open_source.md) | [`enterprise_ai_ecosystem_open_source.md`](./enterprise_ai_ecosystem_open_source.md) |
+| **Enterprise AI Ecosystem (2026)** — LLMs, inference, RAG, agents, observability, graph DBs, ontologies, enterprise context layers, and coding-agent harnesses/skills | [`enterprise_ai_ecosystem_commercial_and_open_source.md`](./enterprise_ai_ecosystem_commercial_and_open_source.md) | [`enterprise_ai_ecosystem_open_source.md`](./enterprise_ai_ecosystem_open_source.md) |
 | **Enterprise Numerical Data Pipeline AI Stack** — IBM Docling, exact `NUMERIC`/`Decimal` storage, text-to-SQL, deterministic compute, and evals | [`enterprise_numerical_data_pipeline_ai_stack_commercial_open_source.md`](./enterprise_numerical_data_pipeline_ai_stack_commercial_open_source.md) | [`enterprise_numerical_data_pipeline_ai_stack_100_permissive_oss.md`](./enterprise_numerical_data_pipeline_ai_stack_100_permissive_oss.md) |
 | **Clinical Imaging & EHR AI Architecture** — HL7/FHIR + PACS/DICOM operational triage vs. analytics/research pipelines, clinical ontologies, and context layers | [`clinical_ops_analytics_commercial.md`](./clinical_ops_analytics_commercial.md) | [`clinical_ops_analytics_oss.md`](./clinical_ops_analytics_oss.md) |
 
