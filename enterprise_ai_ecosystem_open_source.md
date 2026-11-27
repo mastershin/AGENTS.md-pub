@@ -3,7 +3,7 @@
 
 This reference architecture includes **exclusively 100% free, permissive open-source software (Apache 2.0, MIT, BSD, PostgreSQL)**.
 * **Zero Licensing Lock-in:** Safe for proprietary enterprise modification, internal SaaS deployment, and air-gapped VPCs without copyleft (AGPL/GPL) or Fair-Code/SSPL commercial restrictions.
-* **Excluded by Design:** Proprietary SaaS APIs (e.g., Notion, Zep Cloud), managed cloud graph services (e.g., Amazon Neptune, Azure Cosmos DB, Google Cloud Spanner Graph), proprietary free-tier binaries (e.g., Ontotext GraphDB Free), SSPL/RSAL databases (e.g., Redis, MongoDB), copyleft/ELv2 tools (e.g., Arize Phoenix, AppFlowy, Docmost, Neo4j GPLv3, XTDB MPL-2.0), Fair-Code/BSL tools (e.g., n8n, Outline), and non-commercial/restricted weights.
+* **Excluded by Design:** Proprietary SaaS APIs (e.g., Notion, Zep Cloud), managed cloud graph & context platforms (e.g., Amazon Neptune, Azure Cosmos DB, Google Cloud Spanner Graph, Databricks Genie Ontology, AWS Context, Palantir Foundry, Microsoft Fabric IQ), proprietary free-tier binaries (e.g., Ontotext GraphDB Free), SSPL/RSAL databases (e.g., Redis, MongoDB), copyleft/ELv2 tools (e.g., Arize Phoenix, AppFlowy, Docmost, Neo4j GPLv3, XTDB MPL-2.0, Owlready2 LGPL-3.0), Fair-Code/BSL tools (e.g., n8n, Outline), and non-commercial/restricted weights.
 
 > **Scale Tier Legend:**
 > * **Tier 1 (Prototyping / Departmental):** $< 100\text{K}$ documents / $< 1\text{M}$ vectors / $< 10\text{ GB}$
@@ -275,21 +275,20 @@ No single library automatically knows which of two conflicting memos is "true" w
 
 ---
 
-## 15. Open-Source Graph Databases, RDF Triplestores & Ontology Tools (Apache 2.0 / MIT / BSD / PostgreSQL)
+## 15. Open-Source Graph Databases & RDF Triplestores (Apache 2.0 / MIT / BSD / PostgreSQL)
 
-*(Note: **Neo4j** [GPLv3 Community / Commercial Enterprise], **Ontotext GraphDB Free** [Proprietary Free-to-Use Tier — not OSI open source], and managed cloud graph services [**Amazon Neptune**, **Azure Cosmos DB**, **Google Cloud Spanner Graph**] are excluded from the strictly permissive Apache 2.0 / MIT / BSD / PostgreSQL stack below, and are summarized in the reference comparison table for architectural parity).*
+*(Note: **Neo4j** [GPLv3 Community / Commercial Enterprise], **Ontotext GraphDB Free** [Proprietary Free-to-Use Tier — not OSI open source], and managed cloud graph services [**Amazon Neptune**, **Azure Cosmos DB**, **Google Cloud Spanner Graph**] are excluded from the strictly permissive Apache 2.0 / MIT / BSD / PostgreSQL stack below, and are summarized in the reference comparison table for architectural parity. Ontology editors and enterprise context layers sit above these stores in **Section 16**).*
 
-> **Architectural Clarification — Ontology Editors vs. RDF Triplestores vs. Property Graph Databases:**
-> * **Ontology Editors** (e.g., *Protégé*) are **design-time modeling workbenches** for authoring OWL 2, RDFS, and SHACL schemas/taxonomies—not runtime databases. Exported ontologies are loaded into RDF triplestores for querying and reasoning.
+> **Architectural Clarification — RDF Triplestores vs. Property Graph Databases (and Ontologies in Section 16):**
 > * **RDF Triplestores** (e.g., *Apache Jena*) store W3C subject–predicate–object triples, query via **SPARQL 1.1/1.2**, and support formal OWL/RDFS/SHACL semantic inference and Linked Data URIs.
 > * **Labeled Property Graph (LPG) Databases** (e.g., *PostgreSQL + Apache AGE*, *LadybugDB*) model nodes and edges with key-value properties, queried via **Cypher** for GraphRAG, multi-hop traversal, and entity-relationship memory.
+> * **Enterprise Context Layers & Ontology Modeling SDKs** (e.g., *NVIDIA Auto-Ontology*, *AWS Context Ontology Accelerator*, *LinkML*, *Protégé*, *RDFLib/pySHACL*) sit above these storage engines and are covered in **Section 16**.
 
-### Strictly Permissive Graph Databases, RDF Triplestores & Ontology Tools
+### Strictly Permissive Graph Databases & RDF Triplestores
 
 | Logo & Product | License | GitHub Repository | Enterprise Use Cases | Recommended Scale |
 | :--- | :--- | :--- | :--- | :--- |
 | ![Apache Jena](https://img.shields.io/badge/Apache%20Jena-RDF%20%26%20Fuseki-D22128?style=flat-square) **Apache Jena (TDB2 & Fuseki)** | **Apache 2.0** | [apache/jena](https://github.com/apache/jena) | W3C RDF triplestore (`TDB2`), `Fuseki` SPARQL HTTP server, and OWL/RDFS/SHACL inference engine for governed enterprise semantic knowledge graphs. | **Tier 1 – Tier 3** ($100\text{M} - 1\text{B}+$ RDF triples per TDB2 node; zero-lock-in SPARQL endpoint). |
-| ![Protégé](https://img.shields.io/badge/Prot%C3%A9g%C3%A9-Ontology%20Editor-2563EB?style=flat-square) **Protégé** *(Ontology Editor)* | **BSD-2-Clause** | [protegeproject/protege](https://github.com/protegeproject/protege) | Design-time OWL 2 / RDF / SHACL ontology modeling workbench (Desktop & WebProtégé) with description-logic reasoners; ontologies export directly to Apache Jena Fuseki. | **Design-Time Tooling** (Schemas and taxonomies from departmental glossaries to multi-thousand-class domain ontologies). |
 | ![PostgreSQL + Apache AGE](https://img.shields.io/badge/PostgreSQL-Apache%20AGE-4169E1?style=flat-square&logo=postgresql&logoColor=white) **PostgreSQL + Apache AGE** | **PostgreSQL License / Apache 2.0** | [apache/age](https://github.com/apache/age) | Unified ACID relational + openCypher property-graph + `pgvector` database replacing Neo4j in strict permissive environments. | **Tier 1 – Tier 3** ($10\text{ TB}+$ enterprise Postgres clusters combining SQL, Cypher, and vector search). |
 | ![LadybugDB](https://img.shields.io/badge/LadybugDB-Embedded%20Graph-E11D48?style=flat-square) **LadybugDB** *(Kùzu successor)* | **MIT** | [LadybugDB/ladybug](https://github.com/LadybugDB/ladybug) | Embedded columnar property graph database supporting Cypher, vector/full-text search, and Arrow/Parquet integration for local/air-gapped GraphRAG. | **Tier 1 – Tier 2** (Local-first, air-gapped, or serverless embedded knowledge graphs without a separate DB cluster). |
 
@@ -302,4 +301,77 @@ No single library automatically knows which of two conflicting memos is "true" w
 | ![Amazon Neptune](https://img.shields.io/badge/AWS-Amazon%20Neptune-FF9900?style=flat-square&logo=amazonaws&logoColor=white) **Amazon Neptune** ([aws.amazon.com/neptune](https://aws.amazon.com/neptune/)) | Commercial Managed Service (AWS) | Dual-model managed graph DB supporting Property Graphs (`openCypher`, `Gremlin`) and W3C RDF (`SPARQL`), plus Neptune Analytics. | **PostgreSQL + Apache AGE** (`Apache 2.0`, for LPG) and/or **Apache Jena Fuseki** (`Apache 2.0`, for RDF/SPARQL) |
 | ![Azure Cosmos DB](https://img.shields.io/badge/Azure-Cosmos%20DB%20Gremlin-0078D4?style=flat-square&logo=microsoftazure&logoColor=white) **Azure Cosmos DB (for Apache Gremlin)** ([azure.microsoft.com/products/cosmos-db](https://azure.microsoft.com/products/cosmos-db)) | Commercial Managed Service (Azure) | Globally distributed, multi-model managed NoSQL/graph service exposing the Apache TinkerPop `Gremlin` API with multi-region replication. | **PostgreSQL + Apache AGE** (`Apache 2.0`) for Cypher property graphs *(or **Apache TinkerPop / JanusGraph** [`Apache 2.0`] when Gremlin is required)* |
 | ![Google Cloud Spanner Graph](https://img.shields.io/badge/Google%20Cloud-Spanner%20Graph-4285F4?style=flat-square&logo=googlecloud&logoColor=white) **Google Cloud Spanner Graph** ([cloud.google.com/spanner/docs/graph/overview](https://cloud.google.com/spanner/docs/graph/overview)) | Commercial Managed Service (GCP) | Globally consistent distributed ISO GQL + SQL unified relational/graph DB with declarative table-to-graph mapping and built-in vector/full-text search. | **PostgreSQL + Apache AGE + pgvector** (`PostgreSQL / Apache 2.0`) for unified relational + property graph + vector workloads |
+
+---
+
+## 16. Open-Source Enterprise Context Layer & AI Ontologies (Apache 2.0 / BSD)
+
+*(Note: **Databricks Genie Ontology** [Commercial Managed Service], **AWS Context** [Managed Service], **Palantir Foundry Ontology (AIP)** [Commercial Enterprise Platform], **Microsoft Fabric IQ & Ontology** [Commercial Managed Service], and **Owlready2** [LGPL-3.0 weak copyleft] are excluded from the strictly permissive Apache 2.0 / MIT / BSD stack below, and are summarized in the reference comparison table with permissive replacements).*
+
+Raw warehouse tables, data lakes, and flat vector chunks cause AI agents to hallucinate—because schema columns (`rev_amt`, `cust_id`), conflicting departmental KPIs, undocumented joins, and access policies are invisible to an LLM at prompt time. An **Enterprise Context Layer** powered by an **Ontology** bridges raw enterprise data to governed, deterministic AI agents using open standards and self-hosted infrastructure.
+
+### 1. Semantic Layer vs. Ontology vs. Context Layer
+
+They overlap, **but they are not the same**: in modern enterprise AI architecture, a **Semantic Layer** is one foundational ingredient *inside* a broader **Context Layer**, while an **Ontology** provides the formal entity, relationship, rule, and action model tying structured and unstructured context together.
+
+| Layer | Primary Consumer | Core Scope | Typical Examples (Permissive OSS First) |
+| :--- | :--- | :--- | :--- |
+| **Semantic Layer** | BI dashboards, SQL analysts, Text-to-SQL | **Structured metrics & joins:** canonical KPI formulas (`ARR`, `Churn`), dimensions, grain, and rollups over warehouse tables. | `Cube Core` (`Apache 2.0`), `dbt MetricFlow` (`Apache 2.0`) *(commercial ref: LookML, Power BI Semantic Models, Unity Catalog Metric Views)* |
+| **Ontology** | Knowledge graphs, formal reasoners, operational apps & agents | **Business world model:** formal entity types, multi-hop relationships, inheritance, validation rules (`OWL 2` / `SHACL` / `LinkML`), and authorized **actions**. | `Protégé` (`BSD-2-Clause`), `LinkML` (`Apache 2.0`), `OpenSPG / KAG` (`Apache 2.0`) *(commercial ref: Palantir Foundry Ontology)* |
+| **Context Layer** | AI agents & copilots (typically via **MCP**) | **Unified runtime brain for AI:** combines the **Semantic Layer** (metrics) + **Ontology** (entities/rules/actions) + **unstructured & learned context** (SOPs, wikis, past queries, authority ranking) + **runtime governance** (per-user RBAC, row/column masking, provenance). | `NVIDIA Auto-Ontology` (`Apache 2.0`), `AWS Context Ontology Accelerator` (`Apache 2.0`) *(commercial ref: Databricks Genie Ontology, AWS Context, Microsoft Fabric IQ)* |
+
+```text
+AI Agents (Claude, LangGraph, PydanticAI, Custom Agents via MCP)
+                              ▲
+┌─────────────────────────────┴─────────────────────────────┐
+│                    ENTERPRISE CONTEXT LAYER               │
+│  Governance (RBAC/RLS) • Authority Ranking • FastMCP      │
+│  ┌──────────────────────┐   ┌──────────────────────────┐  │
+│  │    Semantic Layer    │ + │         Ontology         │  │
+│  │ (KPIs, Metrics, SQL) │   │ (Entities, Rules, Links) │  │
+│  └──────────────────────┘   └──────────────────────────┘  │
+│              + Unstructured Docs & Learned Usage          │
+└─────────────────────────────┬─────────────────────────────┘
+                              ▼
+    Raw Enterprise Data (Postgres, Lakehouses, Graph DBs, Wikis)
+```
+
+* **When a Semantic Layer alone suffices:** If you only need consistent BI numbers and accurate Text-to-SQL over clean warehouse tables, a permissive Semantic Layer (`Cube Core` or `dbt MetricFlow`, both `Apache 2.0`) is often enough.
+* **When you need a Context Layer backed by an Ontology:** If AI agents must reason across **tables + unstructured documents + business rules + per-user permissions** (or execute governed actions via MCP), you need a Context Layer—which **consumes** rather than replaces your existing Semantic Layer.
+
+### 2. How to Build a Context Layer on Top of Enterprise Data
+
+1. **Discover & Harvest Metadata (`Scan`):** Extract schemas, foreign keys, lineage, dbt/SQL query logs, and SOPs/wikis from PostgreSQL, open lakehouses, and catalogs to propose candidate business entities, joins, and metrics.
+2. **Model & Bind the Ontology (`Semantic + Operational Model`):** Map business concepts (`Customer`, `ARR`, `Shipment`, `Policy`) to physical tables, certified SQL attributes, document provenance, and optional governed actions using open standards (`OWL 2`, `RDF`, `SHACL`, `R2RML`, `LinkML`).
+3. **Certify & Resolve Conflicts (`Human-in-the-Loop + Authority Ranking`):** Pair human-curated definitions and owners (**Modeled Knowledge**) with usage-derived query/metric snippets (**Learned Knowledge**), ranking competing departmental definitions deterministically.
+4. **Enforce Governance & Runtime Validation (`Security + Guardrails`):** Apply caller RBAC/row-level security in PostgreSQL or policy engines at runtime, and validate generated SQL or extracted facts against certified definitions and **SHACL** shapes.
+5. **Serve via MCP & Close the Feedback Loop (`Serve & Learn`):** Expose the Context Layer over self-hosted **Model Context Protocol (MCP)** servers (`FastMCP`) and REST APIs so all agents share one governed source of truth, folding certified fixes back into the ontology.
+
+### 3. Strictly Permissive Context Layer Generators & Ontology SDKs (Apache 2.0 / BSD)
+
+| Logo & Product | License | GitHub Repository | Enterprise Use Cases | Recommended Scale |
+| :--- | :--- | :--- | :--- | :--- |
+| ![NVIDIA](https://img.shields.io/badge/NVIDIA-Auto--Ontology-76B900?style=flat-square&logo=nvidia&logoColor=white) **NVIDIA Auto-Ontology** | **Apache 2.0** *(note: external PRs currently not accepted)* | [NVIDIA/auto-ontology](https://github.com/NVIDIA/auto-ontology) | Automated `Discover → Certify → Reason & Serve` Python + Next.js context-layer framework extracting DB metadata into PostgreSQL/`pgvector` Terms, SQL Attributes, and Relationships; includes human certification UI, SQL validation/provenance, feedback learning, and MCP/REST/CLI serving. | **Tier 1 – Tier 3** (Self-hosted enterprise Text-to-SQL and database semantic context layers). |
+| ![AWS](https://img.shields.io/badge/AWS-Context%20Ontology%20Accelerator-FF9900?style=flat-square&logo=amazonaws&logoColor=white) **AWS Context Ontology Accelerator** | **Apache 2.0** | [aws/context-ontology-accelerator](https://github.com/aws/context-ontology-accelerator) | `Scan → Model → Serve` ontology pipeline scanning JDBC/Glue/data lakes, running LLM-assisted OWL 2 / RDF / R2RML / SHACL induction with human review, and serving via MCP. | **Tier 1 – Tier 3** (W3C standards-based context layer induction over enterprise stores). |
+| ![LinkML](https://img.shields.io/badge/LinkML-Schema%20%26%20OntoGPT-2563EB?style=flat-square) **LinkML & OntoGPT** | **Apache 2.0** (LinkML) / **BSD-3-Clause** (OntoGPT) | [linkml/linkml](https://github.com/linkml/linkml) / [monarch-initiative/ontogpt](https://github.com/monarch-initiative/ontogpt) | Code-first YAML ontology/schema framework compiling to Pydantic, JSON Schema, SQL DDL, and OWL/RDF; pairs with OntoGPT (LLM structured extraction), OAK, and Schemasheets. | **Tier 1 – Tier 3** (Engineering-led domain modeling bridging Python types, SQL, and semantic web standards). |
+| ![Protégé](https://img.shields.io/badge/Prot%C3%A9g%C3%A9-Ontology%20Editor-2563EB?style=flat-square) **Protégé** *(Ontology Editor)* | **BSD-2-Clause** | [protegeproject/protege](https://github.com/protegeproject/protege) | Design-time OWL 2 / RDF / SHACL ontology modeling workbench (Desktop & WebProtégé) with description-logic reasoners; exports directly to Apache Jena Fuseki. | **Design-Time Tooling** (Authoring schemas/taxonomies from departmental glossaries to multi-thousand-class domain ontologies). |
+| ![RDFLib](https://img.shields.io/badge/RDFLib-RDF%20%26%20pySHACL-0EA5E9?style=flat-square) **RDFLib & pySHACL** | **BSD-3-Clause** (RDFLib) / **Apache 2.0** (pySHACL) | [RDFLib/rdflib](https://github.com/RDFLib/rdflib) / [RDFLib/pySHACL](https://github.com/RDFLib/pySHACL) | Core Python SDK for RDF/OWL parsing, serialization, and SPARQL querying (`RDFLib`) paired with automated SHACL constraint validation (`pySHACL`) gating LLM-extracted graphs. | **Tier 1 – Tier 2** (Python knowledge-graph pipelines and CI/runtime schema validation gates). |
+| ![ROBOT](https://img.shields.io/badge/OBO-ROBOT%20CLI-4F46E5?style=flat-square) **ROBOT** | **BSD-3-Clause** | [ontodev/robot](https://github.com/ontodev/robot) | CLI and Java library for automated CI/CD OWL ontology reasoning, diffing, merging, modular subsetting, and quality-control pipelines. | **All Scales (CI/CD)** (Automated ontology release engineering and regression checks). |
+| ![OpenSPG](https://img.shields.io/badge/OpenSPG-KAG%20Ontology-10B981?style=flat-square) **OpenSPG / KAG** | **Apache 2.0** | [OpenSPG/KAG](https://github.com/OpenSPG/KAG) | Semantic-Property-Graph ontology and Knowledge Augmented Generation framework pairing formal domain schemas/rules with LLM multi-hop logical reasoning. | **Tier 2 – Tier 3** (Domain-specific enterprise GraphRAG requiring strict schema constraints and rule inference). |
+
+#### Managed Cloud, Commercial & Copyleft Context / Ontology Platforms (Reference Only — Excluded from Strict Stack)
+
+| Platform / SDK | License (Exclusion Reason) | Ecosystem Role & Ontology Model | Permissive Replacement in This Guide |
+| :--- | :--- | :--- | :--- |
+| ![Databricks](https://img.shields.io/badge/Databricks-Genie%20Ontology-FF3621?style=flat-square&logo=databricks&logoColor=white) **Databricks Genie Ontology** ([docs.databricks.com](https://docs.databricks.com/)) | Commercial Managed Service (Databricks) | Modeled Knowledge (Unity Catalog metric views, domains, Pages) + Learned Knowledge (SQL/dbt/BI snippets) with runtime Unity Catalog RBAC and MCP serving. | **NVIDIA Auto-Ontology** (`Apache 2.0`) + **PostgreSQL / `pgvector`** + **FastMCP** (`Apache 2.0`) |
+| ![AWS](https://img.shields.io/badge/AWS-AWS%20Context-FF9900?style=flat-square&logo=amazonaws&logoColor=white) **AWS Context** *(Managed Service)* | Commercial Managed Service (AWS) | Enterprise context intelligence layer mapping corporate data stores into a governed knowledge graph with Cedar policies, SQL Firewalls, and MCP serving. | **AWS Context Ontology Accelerator** (`Apache 2.0`, self-hosted) + **Apache Jena Fuseki** (`Apache 2.0`) |
+| ![Palantir](https://img.shields.io/badge/Palantir-Foundry%20Ontology-101113?style=flat-square) **Palantir Foundry Ontology (AIP)** ([palantir.com/docs](https://www.palantir.com/docs/)) | Commercial Enterprise Platform (Proprietary) | Operational enterprise ontology uniting semantic objects/properties/links with kinetic actions, write-back functions, and audit trails for AIP agents. | **LinkML** (`Apache 2.0`) + **PostgreSQL + Apache AGE** (`Apache 2.0`) + **FastMCP** (`Apache 2.0`) |
+| ![Microsoft](https://img.shields.io/badge/Microsoft-Fabric%20IQ%20Ontology-0078D4?style=flat-square&logo=microsoft&logoColor=white) **Microsoft Fabric IQ & Ontology** ([learn.microsoft.com/fabric](https://learn.microsoft.com/en-us/fabric/)) | Commercial Managed Service (Microsoft Fabric) | OneLake-native ontology workload item mapping tables and event streams to business concepts, bootstrapped from Power BI semantic models. | **NVIDIA Auto-Ontology** (`Apache 2.0`) or **LinkML** (`Apache 2.0`) over open lakehouse/PostgreSQL metadata |
+| ![Owlready2](https://img.shields.io/badge/Owlready2-Python%20OWL%202-6366F1?style=flat-square) **Owlready2** ([pwin/owlready2](https://github.com/pwin/owlready2)) | LGPL-3.0 (weak copyleft) | Python ontology-oriented programming SDK mapping OWL 2.0 classes/properties to native Python objects with integrated HermiT/Pellet reasoning. | **RDFLib + pySHACL** (`BSD-3-Clause / Apache 2.0`) or **LinkML** (`Apache 2.0`) |
+
+### 4. Practical Starting Stack (100% Permissive OSS Context Layer)
+
+* **Database-to-Context Layer (Text-to-SQL & Certified Metrics):** **NVIDIA Auto-Ontology** (`Apache 2.0`) backed by **PostgreSQL + `pgvector`** (`PostgreSQL License`)—optionally paired with **Cube Core** or **dbt MetricFlow** (`Apache 2.0`) beneath it for BI-grade SQL metrics—and exposed to agents over its built-in **MCP server**.
+* **W3C Standards Ontology & Validation Pipeline:** **AWS Context Ontology Accelerator** (`Apache 2.0`) or **LinkML** (`Apache 2.0`) + **Protégé** (`BSD-2-Clause`) for modeling, **ROBOT** (`BSD-3-Clause`) for CI/CD reasoning, **RDFLib + pySHACL** (`BSD-3-Clause / Apache 2.0`) for ingestion gates, and **Apache Jena Fuseki** (`Apache 2.0`) for SPARQL serving.
+* **Operational Graph + Action Context Layer:** **LinkML** (`Apache 2.0`) schemas backed by **PostgreSQL + Apache AGE** (`PostgreSQL License / Apache 2.0`) with governed agent actions exposed via **FastMCP** (`Apache 2.0`).
 
