@@ -1,5 +1,5 @@
 ---
-description: Seamlessly boots a fresh coding session using the project handoff, checks git state, and presents the next queued action.
+description: Boots a coding session by atomically consolidating pending session fragments into .ai/session-handoff.md, checking git drift, and presenting the next queued task. Use when the user runs /jae-resume-session, /resume-session, or says 'resume session'.
 ---
 
 Follow the [jae-resume-session skill](../../skills/jae-resume-session/SKILL.md).

@@ -1,6 +1,6 @@
 ---
 name: jae-close-session
-description: Summarizes session progress, updates documentation, refreshes feature maps, and builds a compact handoff file for future sessions.
+description: Summarizes session progress, syncs docs and feature maps, and writes an append-only session fragment for parallel-safe handoffs. Use when the user runs /jae-close-session, /close-session, /save-session, or says 'close session' or 'save session'.
 ---
 
 # /jae-close-session (/close-session, /save-session) Protocol
@@ -9,40 +9,37 @@ When triggered by the user via `/jae-close-session`, `/close-session`, `/save-se
 
 ## Phase 1: Scoped Change Inspection
 - Identify ONLY the files and modules modified within THIS session's conversation scope.
-- Run `git status -s` and `git diff --stat` to verify workspace state, ignoring unrelated dirty files from other parallel sessions.
+- Run `git status -s` and `git diff --stat` (if inside a git repository), ignoring unrelated dirty files from other parallel sessions.
 - Identify core architectural decisions, patterns established, or bug resolutions completed during this specific thread.
 
 ## Phase 2: Targeted Doc & Feature Map Sync
 - Update `README.md` or `docs/` ONLY if this session changed public CLI commands, dependencies, API contracts, or schema notes.
-- If this session added, moved, or deleted modules in `src/`, update those specific entries in `docs/FEATURE_MAP.md` (or `FEATURE_MAP.md`).
+- If `docs/FEATURE_MAP.md` (or `FEATURE_MAP.md`) exists and this session added, moved, or deleted modules across source roots (`src/`, `app/`, `pkg/`, `crates/`, `lib/`, `cmd/`, `services/`), update those specific entries and refresh its `<!-- synced: <git-short-sha> -->` header.
 
-## Phase 3: Read Existing State First (NEVER Overwrite)
-**CRITICAL FOR PARALLEL SESSIONS:** Multiple parallel sessions may run against a single project. Never blindly overwrite existing session handoffs or state files.
-1. **Read Existing Documents:**
-   - Check if `.ai/session-handoff.md` and any existing `.ai/sessions/*.md` fragments exist.
-   - If present, **read them first** to understand active workstreams, touchpoints, and queued tasks from parallel sessions or previous cycles.
-2. **Merge Comprehensively:**
-   - **Completed Accomplishments & Aging:**
-     - Prune older completed items that were done a while back to keep the document lean and avoid token bloat.
-     - Retain only the **last few (3–5) most important completed items** across recent cycles/workstreams, and merge in this session's accomplishments.
-   - **Unfinished Tasks (Zero Data-Loss Guarantee):**
-     - **ALWAYS preserve unfinished tasks:** Carry forward all pending, in-flight, or next tasks from the existing handoff AND combine them with this session's next tasks.
-     - **Exception 1 (User Dropped):** If the user explicitly stated they don't want a feature or task, drop it.
-     - **Exception 2 (Move to TODO List):** If the user asked to move items to a TODO list (or if lower-priority/backlog tasks should be deferred to keep the immediate queue focused), move them to `TODO.md` (or a dedicated `### 5. Backlog / Deferred (TODO)` section) instead of leaving them in the immediate task queue or deleting them.
-   - **Active Touchpoints & Migrations:** Merge file touchpoints and pending migrations (preserve active touchpoints from other parallel threads).
-   - **Constraints & Gotchas:** Merge non-obvious gotchas and constraints, deduplicating identical entries and preserving invariants discovered across all sessions.
+## Phase 3: Read Existing State First (Zero Data-Loss Context)
+**CRITICAL FOR PARALLEL SESSIONS:** Multiple parallel sessions may run against a single repository. Never blindly overwrite `.ai/session-handoff.md` from one session when writing a fragment.
+1. **Read Existing State:**
+   - Check if `.ai/session-handoff.md` and any pending `.ai/sessions/*.md` fragments exist.
+   - If present, **read them first** to avoid duplicating tasks already closed or overwriting active workstreams from parallel threads.
+2. **Scoped Fragment Consolidation Rules:**
+   - **Completed Accomplishments & Aging:** Keep only the **last few (3–5) most important completed highlights** from this session/workstream so handoffs stay lean.
+   - **Unfinished Tasks (Zero Data-Loss):** Record all remaining in-flight or next tasks for this session.
+     - **Exception 1 (User Dropped):** Omit tasks the user explicitly dropped.
+     - **Exception 2 (Move to TODO List):** If the user asked to defer lower-priority tasks to a backlog, place them in `TODO.md` or under `### 5. Backlog / Deferred (TODO)`.
+   - **Active Touchpoints & Gotchas:** Record scoped file touchpoints, pending migrations, and non-obvious invariants discovered in this session.
 
-## Phase 4: Write Auto-Named Session Fragment or Merged Handoff
+## Phase 4: Write Immutable, Collision-Free Session Fragment
 - Ensure `.ai/sessions/` exists.
-- Auto-generate a unique filename using the current date, time (`HHMM`), and a 2–3 word kebab-case slug describing this session's work: `.ai/sessions/[YYYY-MM-DD]-[HHMM]-[topic-slug].md`.
-- Write the fragment (or update `.ai/session-handoff.md` if operating in consolidated mode) using the exact high-density template below (strictly under 350 words):
+- If the repository uses `.gitignore` and `.ai/` is neither tracked by git nor ignored yet, append `.ai/` to `.gitignore` (ask first only if the team intentionally commits `.ai/`).
+- Generate a unique, collision-free fragment filename using the current timestamp with seconds, a 4-character hex suffix, and a 2–3 word kebab-case topic slug:
+  `.ai/sessions/[YYYY-MM-DD]-[HHMMSS]-[rand4]-[topic-slug].md`
+- **Always write a new append-only fragment file** (never overwrite `.ai/session-handoff.md` directly during close; `/jae-resume-session` atomically consolidates all fragments at next boot) using the high-density template below (**strictly under 350 words**):
 
 ```markdown
-# Session State: [topic-slug] ([YYYY-MM-DD HH:MM])
+# Session State: [topic-slug] ([YYYY-MM-DD HH:MM:SS])
 
 ### 1. Completed Accomplishments (Last Few Important)
 - **[Workstream / Topic]:** [Concise summary of key accomplishment]
-- [Keep only last 3–5 important completed highlights; pruned older completed items]
 
 ### 2. Scoped Touchpoints & Breaking Changes
 - Key files touched: `[path/to/file1]`, `[path/to/file2]`
@@ -53,11 +50,11 @@ When triggered by the user via `/jae-close-session`, `/close-session`, `/save-se
 2. **[Workstream / Topic]:** [Next concrete unfinished task]
 
 ### 4. Critical Constraints & Gotchas
-- [Consolidated non-obvious invariants and gotchas across sessions]
+- [Non-obvious invariants and gotchas discovered in this session]
 
 ### 5. Backlog / Deferred (TODO)
 - [Deferred items or tasks moved to TODO list per user request; omit if none]
 ```
 
 ## Phase 5: Confirm Close
-- Output a 1-line confirmation: `Saved session state (merged with existing context). Ready to archive.`
+- Output a 1-line confirmation: `Saved session fragment .ai/sessions/<filename> (safe for parallel sessions).`

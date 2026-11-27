@@ -16,7 +16,7 @@ Execute this language-neutral workflow when auditing, adding, or updating OpenTe
 
 ## Stack Detection & Reference Loading
 
-Before writing code, inspect the project files (`package.json`, `pyproject.toml`, `Cargo.toml`, `docker-compose.yml`) and load ONLY the matching reference file(s):
+Before writing code, inspect the project files (`package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod`, `compose.yaml`, `docker-compose.yml`) and load ONLY the matching reference file(s):
 
 * **Browser Frontend (Vue 3, React, Vite, Router, Astryx):** Read `references/frontend-vue-react-vite.md`
 * **Python 3.14 / FastAPI Backend:** Read `references/backend-python-fastapi.md`
@@ -30,9 +30,9 @@ Before writing code, inspect the project files (`package.json`, `pyproject.toml`
 Always scan the repository first to determine whether to **Implement (Greenfield)**, **Upgrade in Place**, or **Consolidate & Rewrite**:
 
 1. **Run Discovery Scans:**
-   * **Dependency & Exporter Scan:** Check `package.json`, `pyproject.toml`, `Cargo.toml`, and `docker-compose.yml` for existing OTel packages, `grpcio` / `tonic` gRPC exporters (`:4317`), or third-party SDKs (Sentry, Datadog, PostHog, Langfuse).
+   * **Dependency & Exporter Scan:** Check `package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod`, `compose.yaml`, and `docker-compose.yml` for existing OTel packages, `grpcio` / `tonic` gRPC exporters (`:4317`), or third-party SDKs (Sentry, Datadog, PostHog, Langfuse).
    * **Encapsulation Leak Scan:** Search for scattered SDK imports outside a dedicated telemetry module:
-     `grep -rnE "from ['\"]@opentelemetry|from opentelemetry|import opentelemetry|tracing_opentelemetry" src/ app/ frontend/ backend/`
+     `rg -n "from ['\"]@opentelemetry|from opentelemetry|import opentelemetry|tracing_opentelemetry" src/ app/ frontend/ backend/`
    * **Security & Anti-Pattern Scan:** Check for direct browser-to-collector URLs (`:4318`, `:5080`, `openobserve`, `signoz`), exposed `VITE_OTEL_*` / `NEXT_PUBLIC_OTEL_*` auth headers, synchronous `await client.post(...)` inside `/api/telemetry` routes, or high-cardinality metric labels (`user_id`, `request.url.path`).
 
 2. **Select Execution Mode:**
@@ -119,8 +119,8 @@ Initialize every SDK `Resource` with these exact attributes so SigNoz, OpenObser
 
 Run these checks before completing any observability implementation:
 
-1. `grep -rnE "from ['\"]@opentelemetry|from opentelemetry|import opentelemetry" --exclude-dir=telemetry --exclude=telemetry.py src/ app/` returns zero matches outside the dedicated telemetry module.
-2. `grep -rnE "OTEL_EXPORTER|:4317|:4318|openobserve|signoz" src/ frontend/` returns zero matches in browser code.
+1. `rg -n "from ['\"]@opentelemetry|from opentelemetry|import opentelemetry" -g '!**/telemetry/**' -g '!**/telemetry.py' src/ app/` returns zero matches outside the dedicated telemetry module.
+2. `rg -n "OTEL_EXPORTER|:4317|:4318|openobserve|signoz" src/ frontend/` returns zero matches in browser code.
 3. Backend dependencies use `http/protobuf` exporters (`opentelemetry-exporter-otlp-proto-http` in Python; `opentelemetry-otlp` with `http-proto`/`reqwest-client` in Rust) pointing to port `4318`.
 4. Frontend `Resource` sets `service.name="<project>-web"` and `app.layer="frontend"`; backend sets `service.name="<project>-api"` and `app.layer="backend"`.
 5. Browser `FetchInstrumentation` includes `ignoreUrls: [/\/api\/telemetry/, /\/healthz?$/]`.

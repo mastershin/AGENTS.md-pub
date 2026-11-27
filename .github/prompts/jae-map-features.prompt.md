@@ -1,5 +1,5 @@
 ---
-description: Generates and maintains docs/FEATURE_MAP.md grouping the codebase into vertical feature slices for 1-hop file navigation.
+description: Generates and incrementally maintains a compact docs/FEATURE_MAP.md grouping any repository into vertical feature slices for 1-hop file navigation. Use when the user runs /jae-map-features, /map-features, asks to 'update feature map', or needs to orient in an unfamiliar repo.
 ---
 
 Follow the [jae-map-features skill](../../skills/jae-map-features/SKILL.md).
