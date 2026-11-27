@@ -44,6 +44,26 @@ This blueprint defines two enterprise architectures ingesting **EHR Clinical Not
 
 ---
 
+## Clinical Ontology, Semantic Layer & Context Layer (Cross-Cutting Layer)
+
+Keep semantic/ontology reasoning **out of the acute pixel-inference hot path** (Stage 3 `MONAI` / `Triton` / FDA-cleared triage) and place it immediately above inference for EHR + PACS fusion, guideline-grounded summarization, and multi-site longitudinal research.
+
+| Layer | Clinical Imaging & EHR Role | Clinical Standards & Tooling | Pipeline Placement |
+| :--- | :--- | :--- | :--- |
+| **Clinical Ontology** | Canonical medical vocabulary, anatomical hierarchy, and machine-checkable clinical scoring rules (`OWL 2` / `SHACL` / `LinkML`) unifying `DICOM SEG/SR` findings with free-text radiology/pathology notes. | **RadLex**, **LOINC / RSNA Playbook**, **SNOMED CT**, **ICD-10-CM**, **RxNorm**, **DICOM SR `TID 1500`**, **RSNA CDEs** + `SHACL` rules for **BI-RADS, Lung-RADS, LI-RADS, RECIST 1.1, Fleischner** (`Protégé`, `LinkML`, `pySHACL`, `OpenSPG / KAG`). | **Both Paths:** normalizes `DICOM SR` + EHR terms in Path 1; harmonizes multi-site longitudinal graphs in Path 2. |
+| **Semantic Layer** | Certified, auditable RIS/PACS/EHR/OMOP SQL metrics so Radiology Ops, Quality committees, and Clinical Trials compute identical numbers. | **Ops KPIs:** exam-to-signoff TAT, critical-finding SLA, AI override rate, scanner-vendor PPV.<br>**Research:** lesion VDT, RECIST SLD change from nadir, **OMOP CDM** cohorts (`Unity Catalog Metric Views`, `Power BI Semantic Models`, `dbt MetricFlow`, `Cube`). | **Path 2** (research cohorts & bias/drift analytics) and **Path 1 Stage 6** (Ops QA telemetry). |
+| **Context Layer** | Runtime fusion of current `DICOM SR` + relevant prior exams (matched via RadLex/LOINC) + relevant EHR labs/notes + active guideline rules with provenance over **MCP** / FHIR. | `Databricks Genie Ontology`, `AWS Context`, `Microsoft Fabric IQ`, `NVIDIA Auto-Ontology`, `Graphiti + Neo4j` exposing permission-scoped clinical context to agents. | **Path 1 Stage 4** (VLM/EHR draft impressions) and **Path 2 Stage 4** (temporal KG). |
+
+### Clinical Guardrails & Boundaries
+
+* **Deterministic Pixel Triage First:** Never gate acute stroke/ICH/PE detection (Path 1 Stage 3) on LLM or ontology queries; keep GPU inference fixed-latency.
+* **HIPAA Minimum-Necessary & RBAC Scoping:** Enforce EHR RBAC and sensitive-record filtering (e.g., behavioral health, 42 CFR Part 2 substance-use notes) at runtime inside the Context Layer.
+* **Bi-Temporal Guidelines & Human Sign-Off:** Version clinical guidelines over time (e.g., Lung-RADS v1.1 → v2022) so longitudinal studies track both disease progression and historical scoring rules; all Path 1 outputs remain provenance-linked drafts for clinician sign-off in OHIF / PACS.
+
+> See [Enterprise AI Ecosystem — Section 16](./enterprise_ai_ecosystem_commercial_and_open_source.md#16-enterprise-context-layer--ai-ontologies-grounding-agents-on-enterprise-data) for the full Semantic Layer vs. Ontology vs. Context Layer architecture and vendor/OSS stack.
+
+---
+
 ## Summary Decision Matrix: Path 1 vs. Path 2
 
 | Architectural Dimension | Path 1: Clinical Operations | Path 2: Clinical Analytics & Research |
@@ -52,4 +72,5 @@ This blueprint defines two enterprise architectures ingesting **EHR Clinical Not
 | **PHI Posture** | **Live PHI** inside strict HIPAA BAA / on-prem VPC boundary | **De-identified / Pseudonymized** via CTP + Presidio / Private AI |
 | **Primary AI Output** | Triage alerts, `DICOM SEG/SR` overlays, concise draft impressions | Deduplicated longitudinal graphs, cohort insights, trained models |
 | **Temporal Requirement** | Current encounter + recent relevant priors | Full multi-year patient trajectory + historical policy/protocol diffs |
+| **Ontology & Context Layer** | RadLex/LOINC prior matching + active guideline SHACL checks + HIPAA-scoped MCP context for Stage 4 drafts | OMOP/RadLex/SNOMED cohort harmonization + bi-temporal guideline & disease graphs + certified research metrics |
 | **Governance Gate** | Clinician-in-the-loop sign-off + FDA/regulatory validation | IRB/data-governance approval + offline benchmark validation |
