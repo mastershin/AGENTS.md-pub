@@ -3,7 +3,7 @@
 
 This reference architecture includes **exclusively 100% free, permissive open-source software (Apache 2.0, MIT, BSD, PostgreSQL)**.
 * **Zero Licensing Lock-in:** Safe for proprietary enterprise modification, internal SaaS deployment, and air-gapped VPCs without copyleft (AGPL/GPL) or Fair-Code/SSPL commercial restrictions.
-* **Excluded by Design:** Proprietary SaaS APIs (e.g., Notion, Zep Cloud), SSPL/RSAL databases (e.g., Redis, MongoDB), copyleft/ELv2 tools (e.g., Arize Phoenix, AppFlowy, Docmost, Neo4j GPLv3, XTDB MPL-2.0), Fair-Code/BSL tools (e.g., n8n, Outline), and non-commercial/restricted weights.
+* **Excluded by Design:** Proprietary SaaS APIs (e.g., Notion, Zep Cloud), managed cloud graph services (e.g., Amazon Neptune, Azure Cosmos DB, Google Cloud Spanner Graph), proprietary free-tier binaries (e.g., Ontotext GraphDB Free), SSPL/RSAL databases (e.g., Redis, MongoDB), copyleft/ELv2 tools (e.g., Arize Phoenix, AppFlowy, Docmost, Neo4j GPLv3, XTDB MPL-2.0), Fair-Code/BSL tools (e.g., n8n, Outline), and non-commercial/restricted weights.
 
 > **Scale Tier Legend:**
 > * **Tier 1 (Prototyping / Departmental):** $< 100\text{K}$ documents / $< 1\text{M}$ vectors / $< 10\text{ GB}$
@@ -272,4 +272,34 @@ No single library automatically knows which of two conflicting memos is "true" w
 * **Temporal entity/fact graphs + provenance:** **Graphiti** (`Apache 2.0`) or **LightRAG** (`MIT`) paired with **PostgreSQL + Apache AGE** (`PostgreSQL License / Apache 2.0`) to avoid Neo4j's `GPLv3` / Commercial terms and Zep's Commercial Cloud. *(Note: verify native Graphiti graph driver support when selecting a backend, as Graphiti officially targets Neo4j/FalkorDB/Neptune).*
 * **Hybrid semantic + graph knowledge base:** **Cognee (OSS)** (`Apache 2.0`, backed by **LadybugDB** [`MIT`] or **NetworkX** [`BSD-3-Clause`]) or **LightRAG** (`MIT`), paired with an incremental ingestion/change-detection pipeline and source metadata/trust tags.
 * **Strict bitemporal compliance/audit ledger:** **PostgreSQL** (`PostgreSQL License`) append-only `tstzrange` valid-time/system-time tables alongside your document/graph store when policy forbids **XTDB** (`MPL-2.0`).
+
+---
+
+## 15. Open-Source Graph Databases, RDF Triplestores & Ontology Tools (Apache 2.0 / MIT / BSD / PostgreSQL)
+
+*(Note: **Neo4j** [GPLv3 Community / Commercial Enterprise], **Ontotext GraphDB Free** [Proprietary Free-to-Use Tier — not OSI open source], and managed cloud graph services [**Amazon Neptune**, **Azure Cosmos DB**, **Google Cloud Spanner Graph**] are excluded from the strictly permissive Apache 2.0 / MIT / BSD / PostgreSQL stack below, and are summarized in the reference comparison table for architectural parity).*
+
+> **Architectural Clarification — Ontology Editors vs. RDF Triplestores vs. Property Graph Databases:**
+> * **Ontology Editors** (e.g., *Protégé*) are **design-time modeling workbenches** for authoring OWL 2, RDFS, and SHACL schemas/taxonomies—not runtime databases. Exported ontologies are loaded into RDF triplestores for querying and reasoning.
+> * **RDF Triplestores** (e.g., *Apache Jena*) store W3C subject–predicate–object triples, query via **SPARQL 1.1/1.2**, and support formal OWL/RDFS/SHACL semantic inference and Linked Data URIs.
+> * **Labeled Property Graph (LPG) Databases** (e.g., *PostgreSQL + Apache AGE*, *LadybugDB*) model nodes and edges with key-value properties, queried via **Cypher** for GraphRAG, multi-hop traversal, and entity-relationship memory.
+
+### Strictly Permissive Graph Databases, RDF Triplestores & Ontology Tools
+
+| Logo & Product | License | GitHub Repository | Enterprise Use Cases | Recommended Scale |
+| :--- | :--- | :--- | :--- | :--- |
+| ![Apache Jena](https://img.shields.io/badge/Apache%20Jena-RDF%20%26%20Fuseki-D22128?style=flat-square) **Apache Jena (TDB2 & Fuseki)** | **Apache 2.0** | [apache/jena](https://github.com/apache/jena) | W3C RDF triplestore (`TDB2`), `Fuseki` SPARQL HTTP server, and OWL/RDFS/SHACL inference engine for governed enterprise semantic knowledge graphs. | **Tier 1 – Tier 3** ($100\text{M} - 1\text{B}+$ RDF triples per TDB2 node; zero-lock-in SPARQL endpoint). |
+| ![Protégé](https://img.shields.io/badge/Prot%C3%A9g%C3%A9-Ontology%20Editor-2563EB?style=flat-square) **Protégé** *(Ontology Editor)* | **BSD-2-Clause** | [protegeproject/protege](https://github.com/protegeproject/protege) | Design-time OWL 2 / RDF / SHACL ontology modeling workbench (Desktop & WebProtégé) with description-logic reasoners; ontologies export directly to Apache Jena Fuseki. | **Design-Time Tooling** (Schemas and taxonomies from departmental glossaries to multi-thousand-class domain ontologies). |
+| ![PostgreSQL + Apache AGE](https://img.shields.io/badge/PostgreSQL-Apache%20AGE-4169E1?style=flat-square&logo=postgresql&logoColor=white) **PostgreSQL + Apache AGE** | **PostgreSQL License / Apache 2.0** | [apache/age](https://github.com/apache/age) | Unified ACID relational + openCypher property-graph + `pgvector` database replacing Neo4j in strict permissive environments. | **Tier 1 – Tier 3** ($10\text{ TB}+$ enterprise Postgres clusters combining SQL, Cypher, and vector search). |
+| ![LadybugDB](https://img.shields.io/badge/LadybugDB-Embedded%20Graph-E11D48?style=flat-square) **LadybugDB** *(Kùzu successor)* | **MIT** | [LadybugDB/ladybug](https://github.com/LadybugDB/ladybug) | Embedded columnar property graph database supporting Cypher, vector/full-text search, and Arrow/Parquet integration for local/air-gapped GraphRAG. | **Tier 1 – Tier 2** (Local-first, air-gapped, or serverless embedded knowledge graphs without a separate DB cluster). |
+
+#### Non-Permissive, Proprietary Free-Tier & Managed Cloud Graph Services (Reference Only — Excluded from Strict Stack)
+
+| Platform / Engine | License (Exclusion Reason) | Ecosystem Role & Graph Model | Permissive Replacement in This Guide |
+| :--- | :--- | :--- | :--- |
+| ![Neo4j](https://img.shields.io/badge/Neo4j-Graph%20DB-008CC1?style=flat-square&logo=neo4j&logoColor=white) **Neo4j** ([neo4j/neo4j](https://github.com/neo4j/neo4j)) | GPLv3 (Community) + Commercial Enterprise / AuraDB | Enterprise Labeled Property Graph DB (Cypher / ISO GQL) with built-in vector/full-text indexes and Graph Data Science (GDS). | **PostgreSQL + Apache AGE** (`Apache 2.0`) or **LadybugDB** (`MIT`) |
+| ![GraphDB](https://img.shields.io/badge/Ontotext-GraphDB%20Free-1E293B?style=flat-square) **Ontotext GraphDB Free** ([ontotext.com/products/graphdb](https://www.ontotext.com/products/graphdb/)) | Proprietary Free-to-Use Tier *(not OSI open source; registration key required as of v11+, capped at 2 concurrent queries)* | W3C RDF/SPARQL triplestore with OWL/RDFS reasoning, RDF-star provenance, and vector/full-text indexing. | **Apache Jena (TDB2 & Fuseki)** (`Apache 2.0`) + **Protégé** (`BSD-2-Clause`) |
+| ![Amazon Neptune](https://img.shields.io/badge/AWS-Amazon%20Neptune-FF9900?style=flat-square&logo=amazonaws&logoColor=white) **Amazon Neptune** ([aws.amazon.com/neptune](https://aws.amazon.com/neptune/)) | Commercial Managed Service (AWS) | Dual-model managed graph DB supporting Property Graphs (`openCypher`, `Gremlin`) and W3C RDF (`SPARQL`), plus Neptune Analytics. | **PostgreSQL + Apache AGE** (`Apache 2.0`, for LPG) and/or **Apache Jena Fuseki** (`Apache 2.0`, for RDF/SPARQL) |
+| ![Azure Cosmos DB](https://img.shields.io/badge/Azure-Cosmos%20DB%20Gremlin-0078D4?style=flat-square&logo=microsoftazure&logoColor=white) **Azure Cosmos DB (for Apache Gremlin)** ([azure.microsoft.com/products/cosmos-db](https://azure.microsoft.com/products/cosmos-db)) | Commercial Managed Service (Azure) | Globally distributed, multi-model managed NoSQL/graph service exposing the Apache TinkerPop `Gremlin` API with multi-region replication. | **PostgreSQL + Apache AGE** (`Apache 2.0`) for Cypher property graphs *(or **Apache TinkerPop / JanusGraph** [`Apache 2.0`] when Gremlin is required)* |
+| ![Google Cloud Spanner Graph](https://img.shields.io/badge/Google%20Cloud-Spanner%20Graph-4285F4?style=flat-square&logo=googlecloud&logoColor=white) **Google Cloud Spanner Graph** ([cloud.google.com/spanner/docs/graph/overview](https://cloud.google.com/spanner/docs/graph/overview)) | Commercial Managed Service (GCP) | Globally consistent distributed ISO GQL + SQL unified relational/graph DB with declarative table-to-graph mapping and built-in vector/full-text search. | **PostgreSQL + Apache AGE + pgvector** (`PostgreSQL / Apache 2.0`) for unified relational + property graph + vector workloads |
 
